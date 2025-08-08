@@ -16,7 +16,8 @@ in
   home-manager.useGlobalPkgs = true;
   home-manager.backupFileExtension = "backup";
   home-manager.users.haiminh256 = import ./home.nix;
-
+  
+  nix.settings.experimental-features = [ "nix-command" "flakes" ];
   # Use the systemd-boot EFI boot loader.
   boot.loader.grub.enable = true;
   boot.loader.efi.canTouchEfiVariables = true;
@@ -37,7 +38,7 @@ in
   # Configure network proxy if necessary
   # networking.proxy.default = "http://user:password@proxy:port/";
   # networking.proxy.noProxy = "127.0.0.1,localhost,internal.domain";
-
+  nixpkgs.config.allowUnfree = true;
   # Select internationalisation properties.
   i18n.defaultLocale = "en_US.UTF-8";
   # console = {
@@ -77,14 +78,13 @@ in
      packages = with pkgs; [
        tree
        xdg-desktop-portal
-       xdg-desktop-portal-wlr
-       rustup 
+       xdg-desktop-portal-wlr 
        grim
        waybar
-       obs-studio
        wlogout
        gcc
-       pavucontrol
+       ccls
+       microsoft-edge
      ];
    };
 
@@ -94,13 +94,11 @@ in
   # You can use https://search.nixos.org/ to find more packages (and options).
    environment.systemPackages = with pkgs; [
      neovim # Do not forget to add an editor to edit configuration.nix! The Nano editor is also installed by default.
-     wget
      git
      wofi
      neofetch
      sway
      foot
-     chromium
      xwayland
      brightnessctl
      os-prober
