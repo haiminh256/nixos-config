@@ -3,22 +3,42 @@
 # https://search.nixos.org/options and in the NixOS manual (`nixos-help`).
 
 { config, lib, pkgs, ... }:
-
+let
+  home-manager = builtins.fetchTarball "https://github.com/nix-community/home-manager/archive/master.tar.gz";
+in
 {
   imports =
     [ # Include the results of the hardware scan.
       /etc/nixos/hardware-configuration.nix
+      (import "${home-manager}/nixos")
       ./dwl.nix
       ./slstatus.nix
     ];
-
+  home-manager.useUserPackages = true;
+  home-manager.useGlobalPkgs = true;
+  home-manager.backupFileExtension = "backup";
+  home-manager.users.haiminh256 = import ./home.nix;
   # Use the systemd-boot EFI boot loader.
   boot.loader.grub.enable = true;
   boot.loader.grub.efiSupport = true;
   boot.loader.grub.device = "nodev";
   boot.loader.grub.useOSProber = true;
   boot.loader.efi.canTouchEfiVariables = true;
-
+  
+xdg.portal = {
+  enable = true;
+  extraPortals = [ pkgs.xdg-desktop-portal-wlr ];
+  config = {
+    common = {
+      default = [ "wlr" ];
+    };
+  };
+};
+    environment.sessionVariables = {
+    XDG_SESSION_TYPE = "wayland";
+    XDG_CURRENT_DESKTOP = "wlroots";
+    XDG_SESSION_DESKTOP = "wlroots";
+  };
   # Use latest kernel.
   boot.kernelPackages = pkgs.linuxPackages_latest;
 
