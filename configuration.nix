@@ -7,7 +7,7 @@
 {
   imports =
     [ # Include the results of the hardware scan.
-      ./hardware-configuration.nix
+      /etc/nixos/hardware-configuration.nix
       ./dwl.nix
       ./slstatus.nix
     ];
@@ -26,10 +26,10 @@
   # Pick only one of the below networking options.
   # networking.wireless.enable = true;  # Enables wireless support via wpa_supplicant.
   networking.networkmanager.enable = true;  # Easiest to use and most distros use this by default.
-
+  nix.settings.experimental-features = ["nix-command" "flakes"];
   # Set your time zone.
   time.timeZone = "Asia/Ho_Chi_Minh";
-  hardware.opengl.enable = true;
+  hardware.graphics.enable = true;
   # Configure network proxy if necessary
   # networking.proxy.default = "http://user:password@proxy:port/";
   # networking.proxy.noProxy = "127.0.0.1,localhost,internal.domain";
@@ -47,6 +47,7 @@
   services.seatd.enable = true;
 
   nixpkgs.config.allowUnfree = true;
+  programs.zsh.enable = true;
 
   # Configure keymap in X11
   # services.xserver.xkb.layout = "us";
@@ -69,6 +70,7 @@
   # Define a user account. Don't forget to set a password with ‘passwd’.
    users.users.haiminh256 = {
      isNormalUser = true;
+     shell = pkgs.zsh;
      extraGroups = [ "wheel" "video" "seat" ]; # Enable ‘sudo’ for the user.
      packages = with pkgs; [
        tree
@@ -84,7 +86,6 @@
      wget
      git
      mesa
-     mesa.drivers
      os-prober
      foot
      dwl
@@ -100,6 +101,7 @@
      xdg-desktop-portal-wlr
      neofetch
      xfce.thunar
+     zsh
    ];
 
   # Some programs need SUID wrappers, can be configured further or are
@@ -143,7 +145,7 @@
   # and migrated your data accordingly.
   #
   # For more information, see `man configuration.nix` or https://nixos.org/manual/nixos/stable/options#opt-system.stateVersion .
-  system.stateVersion = "25.05"; # Did you read the comment?
+  system.stateVersion = "25.11"; # Did you read the comment?
 
 }
 
