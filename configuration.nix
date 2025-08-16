@@ -3,27 +3,22 @@
 # https://search.nixos.org/options and in the NixOS manual (`nixos-help`).
 
 { config, lib, pkgs, ... }:
-let
-  home-manager = builtins.fetchTarball "https://github.com/nix-community/home-manager/archive/release-25.05.tar.gz";
-in
+
 {
   imports =
     [ # Include the results of the hardware scan.
       ./hardware-configuration.nix
-      (import "${home-manager}/nixos")
+      ./dwl.nix
+      ./slstatus.nix
     ];
-  home-manager.useUserPackages = true;
-  home-manager.useGlobalPkgs = true;
-  home-manager.backupFileExtension = "backup";
-  home-manager.users.haiminh256 = import ./home.nix;
-  
-  nix.settings.experimental-features = [ "nix-command" "flakes" ];
+
   # Use the systemd-boot EFI boot loader.
   boot.loader.grub.enable = true;
-  boot.loader.efi.canTouchEfiVariables = true;
   boot.loader.grub.efiSupport = true;
   boot.loader.grub.device = "nodev";
   boot.loader.grub.useOSProber = true;
+  boot.loader.efi.canTouchEfiVariables = true;
+
   # Use latest kernel.
   boot.kernelPackages = pkgs.linuxPackages_latest;
 
@@ -34,11 +29,11 @@ in
 
   # Set your time zone.
   time.timeZone = "Asia/Ho_Chi_Minh";
-
+  hardware.opengl.enable = true;
   # Configure network proxy if necessary
   # networking.proxy.default = "http://user:password@proxy:port/";
   # networking.proxy.noProxy = "127.0.0.1,localhost,internal.domain";
-  nixpkgs.config.allowUnfree = true;
+
   # Select internationalisation properties.
   i18n.defaultLocale = "en_US.UTF-8";
   # console = {
@@ -49,9 +44,9 @@ in
 
   # Enable the X11 windowing system.
   # services.xserver.enable = true;
+  services.seatd.enable = true;
 
-
-  
+  nixpkgs.config.allowUnfree = true;
 
   # Configure keymap in X11
   # services.xserver.xkb.layout = "us";
@@ -74,36 +69,37 @@ in
   # Define a user account. Don't forget to set a password with ‘passwd’.
    users.users.haiminh256 = {
      isNormalUser = true;
-     extraGroups = [ "wheel" ]; # Enable ‘sudo’ for the user.
+     extraGroups = [ "wheel" "video" "seat" ]; # Enable ‘sudo’ for the user.
      packages = with pkgs; [
        tree
-       xdg-desktop-portal
-       xdg-desktop-portal-wlr 
-       grim
-       waybar
-       wlogout
-       gcc
-       ccls
-       microsoft-edge
      ];
    };
 
   # programs.firefox.enable = true;
-  programs.sway.enable = true;
+
   # List packages installed in system profile.
   # You can use https://search.nixos.org/ to find more packages (and options).
    environment.systemPackages = with pkgs; [
      neovim # Do not forget to add an editor to edit configuration.nix! The Nano editor is also installed by default.
+     wget
      git
-     wofi
-     neofetch
-     sway
-     foot
-     xwayland
-     brightnessctl
+     mesa
+     mesa.drivers
      os-prober
+     foot
+     dwl
+     slstatus
+     pamixer
+     brightnessctl
+     grim
+     wofi
+     wbg
+     gcc
+     microsoft-edge
+     xdg-desktop-portal
+     xdg-desktop-portal-wlr
+     neofetch
      xfce.thunar
-     swaybg
    ];
 
   # Some programs need SUID wrappers, can be configured further or are
